@@ -38,7 +38,7 @@ class Adder():
 
         def addIDB (self):
                 onturi=list(self.g.triples((None, RDF.type, OWL.Ontology)))[0][0]
-                ts=[t[0] for t in self.g.triples((None, RDF.type, None)) if self.allow in str(t[0])]
+                ts=[t[0] for t in self.g.triples((None, RDF.type, None)) if self.allow in str(t[0]) and t[0]!=t[2]]
                 print (len(ts))
                 for t in ts:
                         if (type(t)!=rdflib.BNode):
