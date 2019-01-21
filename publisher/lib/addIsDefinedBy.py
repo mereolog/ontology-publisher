@@ -29,13 +29,20 @@ class Adder():
         def __init__(self, args, file):
         
                 self.verbose = args.verbose
-                self.g = rdflib.Graph().parse(file)
+                self.allow=args.allow
+                if file.endswith(".ttl"):
+                        format="turtle"
+                else:
+                        format="rdf-xml"
+                self.g = rdflib.Graph().parse(file, format=format)
 
         def addIDB (self):
                 onturi=list(self.g.triples((None, RDF.type, OWL.Ontology)))[0][0]
-                ts=[t[0] for t in self.g.triples((None, RDF.type, None)) if "edmcouncil" in str(t[0])]
+                ts=[t[0] for t in self.g.triples((None, RDF.type, None)) if self.allow in str(t[0])]
+                print (len(ts))
                 for t in ts:
                         if (type(t)!=rdflib.BNode):
+                                print("adding "+str(t))
                                 self.g.add((t, RDFS.isDefinedBy, onturi))
 
 
@@ -49,6 +56,7 @@ if __name__ == "__main__":
   
         parser = argparse.ArgumentParser(description='Adds isDefinedBy to each resource')
         parser.add_argument('--verbose', '-v', help='verbose output', default=False, action='store_true')
+        parser.add_argument('--allow', '-a', help='allow IRIs with this substring', default='edmcouncil')
         parser.add_argument('--format', '-f', help='Specify either ttl for Turtle or nq for NQuads')
         parser.add_argument('--file', '-p', help='File to work on')
         args = parser.parse_args()
