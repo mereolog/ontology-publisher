@@ -49,11 +49,9 @@
           <p>This page allows you to navigate the tree structure of FIBO's Domains and Modules and drill down into the individual ontologies.<br/>
             If you hover the mouse over any item you’ll see its description.<br/> 
             For ontologies (the bottom level) it will tell you the status (either Production or Development) and clicking on one will take you to the web document for that ontology.
-            These documents are automatically generated for each ontology using <a href="https://github.com/dgarijo/Widoco">WIzard for DOCumenting Ontologies (WIDOCO)</a> software, 
-            which includes a graphical visualization of the ontology and related elements in a force-directed graph layout using <a href="http://vowl.visualdataweb.org/v2/">Visual Notation for OWL Ontologies (VOWL)</a>. 
+            These documents are automatically generated for each ontology using <a href="https://github.com/dgarijo/Widoco">WIzard for DOCumenting Ontologies (WIDOCO)</a> software.
           </p>
-          <p>Note: it has not been possible to generate WIDOCO documents for all the Development ontologies in FIBO (there are currently about 100 missing). 
-            Clicking on those ontologies will give you an error page. The FIBO team is working to avoid creating a link in such cases.</p>
+	  <p>A list of all ontologies in FIBO and whether they can be found in the Production release or the Development release is available (<a href="FIBOpedia.csv">csv</a>, <a href="FIBOpedia.xlsx">excel</a>)</p>
           <br/>
           <ul class="tree">
              <xsl:for-each select="/rdf:RDF/owl:NamedIndividual[rdf:type/@rdf:resource='http://www.omg.org/techprocess/ab/SpecificationMetadata/Specification']">
