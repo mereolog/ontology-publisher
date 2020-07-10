@@ -248,6 +248,33 @@ skosify:subs
 rdf:Property
   spin:rule [
       rdf:type sp:Construct ;
+      sp:templates (
+          [
+            sp:object [
+                sp:varName "subject" ;
+              ] ;
+            sp:predicate [
+                sp:varName "predicate2" ;
+              ] ;
+            sp:subject [
+                sp:varName "object" ;
+              ] ;
+          ]
+          [
+            sp:object "Rule11 S" ;
+            sp:predicate skos:historyNote ;
+            sp:subject [
+                sp:varName "subject" ;
+              ] ;
+          ]
+          [
+            sp:object "Rule 11 O" ;
+            sp:predicate skos:historyNote ;
+            sp:subject [
+                sp:varName "object" ;
+              ] ;
+          ]
+        ) ;
       sp:text """# Rule 11
 CONSTRUCT {
     ?object ?predicate2 ?subject .
@@ -257,10 +284,59 @@ CONSTRUCT {
 WHERE {
     ?pp a owl:ObjectProperty .
     ?pp skos:historyNote ?hn .
-    FILTER regex(?hn, \"^Rule\") .
+    FILTER regex(?hn, \"^Rule\") . 
     ?subject ?pp ?object .
     ?predicate2 owl:inverseOf ?pp .
 }""" ;
+      sp:where (
+          [
+            sp:object owl:ObjectProperty ;
+            sp:predicate rdf:type ;
+            sp:subject [
+                sp:varName "pp" ;
+              ] ;
+          ]
+          [
+            sp:object [
+                sp:varName "hn" ;
+              ] ;
+            sp:predicate skos:historyNote ;
+            sp:subject [
+                sp:varName "pp" ;
+              ] ;
+          ]
+          [
+            rdf:type sp:Filter ;
+            sp:expression [
+                rdf:type sp:regex ;
+                sp:arg1 [
+                    sp:varName "hn" ;
+                  ] ;
+                sp:arg2 "^Rule" ;
+              ] ;
+          ]
+          [
+            sp:object [
+                sp:varName "object" ;
+              ] ;
+            sp:predicate [
+                sp:varName "pp" ;
+              ] ;
+            sp:subject [
+                sp:varName "subject" ;
+              ] ;
+          ]
+          [
+            sp:object [
+                sp:varName "pp" ;
+              ] ;
+            sp:predicate owl:inverseOf ;
+            sp:subject [
+                sp:varName "predicate2" ;
+              ] ;
+          ]
+        ) ;
+      rdfs:comment "Rule 11" ;
     ] ;
 .
 owl:Class
@@ -284,219 +360,27 @@ owl:Class
               ] ;
           ]
         ) ;
-      sp:where (
-          [
-            sp:object rdfs:Datatype ;
-            sp:predicate rdf:type ;
-            sp:subject [
-                sp:varName "entity" ;
-              ] ;
-          ]
-          [
-            rdf:type sp:Filter ;
-            sp:expression [
-                rdf:type sp:regex ;
-                sp:arg1 [
-                    rdf:type xsd:string ;
-                    sp:arg1 [
-                        sp:varName "entity" ;
-                      ] ;
-                  ] ;
-                sp:arg2 "edmcouncil" ;
-              ] ;
-          ]
-          [
-            rdf:type sp:Filter ;
-            sp:expression [
-                rdf:type sp:notExists ;
-                sp:elements (
-                    [
-                      sp:object "true"^^xsd:boolean ;
-                      sp:predicate owl:deprecated ;
-                      sp:subject [
-                          sp:varName "entity" ;
-                        ] ;
-                    ]
-                  ) ;
-              ] ;
-          ]
-          [
-            rdf:type sp:Filter ;
-            sp:expression [
-                rdf:type sp:regex ;
-                sp:arg1 [
-                    rdf:type xsd:string ;
-                    sp:arg1 [
-                        sp:varName "entity" ;
-                      ] ;
-                  ] ;
-                sp:arg2 "edmcouncil" ;
-              ] ;
-          ]
-          [
-            sp:object [
-                sp:varName "px" ;
-              ] ;
-            sp:predicate skosify:px ;
-            sp:subject skos:Concept ;
-          ]
-          [
-            rdf:type sp:Optional ;
-            sp:elements (
-                [
-                  sp:object [
-                      sp:varName "oldlabel" ;
-                    ] ;
-                  sp:predicate rdfs:label ;
-                  sp:subject [
-                      sp:varName "entity" ;
-                    ] ;
-                ]
-              ) ;
-          ]
-          [
-            rdf:type sp:Bind ;
-            sp:expression [
-                rdf:type sp:replace ;
-                sp:arg1 [
-                    rdf:type sp:str ;
-                    sp:arg1 [
-                        sp:varName "entity" ;
-                      ] ;
-                  ] ;
-                sp:arg2 "^.*(#|/)" ;
-                sp:arg3 "" ;
-              ] ;
-            sp:variable [
-                sp:varName "lentity" ;
-              ] ;
-          ]
-          [
-            rdf:type sp:Bind ;
-            sp:expression [
-                rdf:type sp:replace ;
-                sp:arg1 [
-                    rdf:type sp:replace ;
-                    sp:arg1 [
-                        rdf:type sp:replace ;
-                        sp:arg1 [
-                            rdf:type sp:replace ;
-                            sp:arg1 [
-                                rdf:type sp:replace ;
-                                sp:arg1 [
-                                    sp:varName "lentity" ;
-                                  ] ;
-                                sp:arg2 "”" ;
-                                sp:arg3 "\"" ;
-                              ] ;
-                            sp:arg2 "“" ;
-                            sp:arg3 "\"" ;
-                          ] ;
-                        sp:arg2 "–" ;
-                        sp:arg3 "-" ;
-                      ] ;
-                    sp:arg2 "’" ;
-                    sp:arg3 "'" ;
-                  ] ;
-                sp:arg2 "‘" ;
-                sp:arg3 "'" ;
-              ] ;
-            sp:variable [
-                sp:varName "altlabel" ;
-              ] ;
-          ]
-          [
-            rdf:type sp:Bind ;
-            sp:expression [
-                rdf:type sp:replace ;
-                sp:arg1 [
-                    rdf:type sp:replace ;
-                    sp:arg1 [
-                        rdf:type sp:replace ;
-                        sp:arg1 [
-                            rdf:type sp:replace ;
-                            sp:arg1 [
-                                rdf:type sp:replace ;
-                                sp:arg1 [
-                                    sp:varName "oldlabel" ;
-                                  ] ;
-                                sp:arg2 "”" ;
-                                sp:arg3 "\"" ;
-                              ] ;
-                            sp:arg2 "“" ;
-                            sp:arg3 "\"" ;
-                          ] ;
-                        sp:arg2 "–" ;
-                        sp:arg3 "-" ;
-                      ] ;
-                    sp:arg2 "’" ;
-                    sp:arg3 "'" ;
-                  ] ;
-                sp:arg2 "‘" ;
-                sp:arg3 "'" ;
-              ] ;
-            sp:variable [
-                sp:varName "preflabel" ;
-              ] ;
-          ]
-          [
-            rdf:type sp:Bind ;
-            sp:expression [
-                rdf:type sp:uri ;
-                sp:arg1 [
-                    rdf:type skosify:subs ;
-                    arg:a1 [
-                        sp:varName "entity" ;
-                      ] ;
-                    arg:a2 [
-                        rdf:type sp:concat ;
-                        sp:arg1 [
-                            sp:varName "px" ;
-                          ] ;
-                        sp:arg2 [
-                            rdf:type sp:replace ;
-                            sp:arg1 [
-                                rdf:type sp:encode_for_uri ;
-                                sp:arg1 [
-                                    rdf:type sp:str ;
-                                    sp:arg1 [
-                                        sp:varName "lentity" ;
-                                      ] ;
-                                  ] ;
-                              ] ;
-                            sp:arg2 "^." ;
-                            sp:arg3 "uc($0)" ;
-                          ] ;
-                      ] ;
-                  ] ;
-              ] ;
-            sp:variable [
-                sp:varName "skentity" ;
-              ] ;
-          ]
-        ) ;
-      rdfs:comment "Classes and Datatypes become Concepts" ;
-    ] ;
-  spin:rule [
-      rdf:type sp:Construct ;
-      sp:templates (
-          [
-            sp:object skos:Concept ;
-            sp:predicate rdf:type ;
-            sp:subject [
-                sp:varName "skentity" ;
-              ] ;
-          ]
-          [
-            sp:object [
-                sp:varName "entity" ;
-              ] ;
-            sp:predicate rdfs:isDefinedBy ;
-            sp:subject [
-                sp:varName "skentity" ;
-              ] ;
-          ]
-        ) ;
+      sp:text """# Classes and Datatypes become Concepts
+CONSTRUCT {
+    ?skentity a skos:Concept .
+    ?skentity rdfs:isDefinedBy ?entity .
+}
+WHERE {
+    ?entity a owl:Class .
+    FILTER regex(xsd:string(?entity), \"edmcouncil\") .
+    FILTER NOT EXISTS {
+        ?entity owl:deprecated true . 
+    } .
+    skos:Concept skosify:px ?px .
+    OPTIONAL {
+        ?entity rdfs:label ?oldlabel .
+    } .
+    FILTER regex(xsd:string(?entity), \"edmc\", \"i\") .
+    BIND (REPLACE(str(?entity), \"^.*(#|/)\", \"\") AS ?lentity) .
+    BIND (REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(?lentity, \"”\", \"\\\"\"), \"“\", \"\\\"\"), \"–\", \"-\"), \"’\", \"'\"), \"‘\", \"'\") AS ?altlabel) .
+    BIND (REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(?oldlabel, \"”\", \"\\\"\"), \"“\", \"\\\"\"), \"–\", \"-\"), \"’\", \"'\"), \"‘\", \"'\") AS ?preflabel) .
+    BIND (URI(skosify:subs(?entity, CONCAT(?px, ENCODE_FOR_URI(str(?lentity))))) AS ?skentity) .
+}""" ;
       sp:where (
           [
             sp:object owl:Class ;
@@ -690,10 +574,8 @@ owl:Class
       rdf:type sp:Construct ;
       sp:templates (
           [
-            sp:object [
-                sp:varName "titLabel" ;
-              ] ;
-            sp:predicate skos:prefLabel ;
+            sp:object skos:Concept ;
+            sp:predicate rdf:type ;
             sp:subject [
                 sp:varName "skentity" ;
               ] ;
@@ -708,6 +590,27 @@ owl:Class
               ] ;
           ]
         ) ;
+      sp:text """# Classes and Datatypes become Concepts
+CONSTRUCT { 
+    ?skentity a skos:Concept .
+    ?skentity rdfs:isDefinedBy ?entity .
+}
+WHERE {
+    ?entity a rdfs:Datatype .
+    FILTER regex(xsd:string(?entity), \"edmcouncil\") .
+    FILTER NOT EXISTS {
+        ?entity owl:deprecated true .
+    } .
+    FILTER regex(xsd:string(?entity), \"edmcouncil\") .
+    skos:Concept skosify:px ?px .
+    OPTIONAL {
+        ?entity rdfs:label ?oldlabel .
+    } .
+    BIND (REPLACE(str(?entity), \"^.*(#|/)\", \"\") AS ?lentity) .
+    BIND (REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(?lentity, \"”\", \"\\\"\"), \"“\", \"\\\"\"), \"–\", \"-\"), \"’\", \"'\"), \"‘\", \"'\") AS ?altlabel) .
+    BIND (REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(?oldlabel, \"”\", \"\\\"\"), \"“\", \"\\\"\"), \"–\", \"-\"), \"’\", \"'\"), \"‘\", \"'\") AS ?preflabel) .
+    BIND (URI(skosify:subs(?entity, CONCAT(?px, REPLACE(ENCODE_FOR_URI(str(?lentity)), \"^.\", \"uc($0)\")))) AS ?skentity) .
+}""" ;
       sp:where (
           [
             sp:object rdfs:Datatype ;
@@ -745,6 +648,19 @@ owl:Class
               ] ;
           ]
           [
+            rdf:type sp:Filter ;
+            sp:expression [
+                rdf:type sp:regex ;
+                sp:arg1 [
+                    rdf:type xsd:string ;
+                    sp:arg1 [
+                        sp:varName "entity" ;
+                      ] ;
+                  ] ;
+                sp:arg2 "edmcouncil" ;
+              ] ;
+          ]
+          [
             sp:object [
                 sp:varName "px" ;
               ] ;
@@ -752,23 +668,11 @@ owl:Class
             sp:subject skos:Concept ;
           ]
           [
-            rdf:type sp:Filter ;
-            sp:expression [
-                rdf:type sp:not ;
-                sp:arg1 [
-                    rdf:type sp:isBlank ;
-                    sp:arg1 [
-                        sp:varName "entity" ;
-                      ] ;
-                  ] ;
-              ] ;
-          ]
-          [
             rdf:type sp:Optional ;
             sp:elements (
                 [
                   sp:object [
-                      sp:varName "label" ;
+                      sp:varName "oldlabel" ;
                     ] ;
                   sp:predicate rdfs:label ;
                   sp:subject [
@@ -797,22 +701,7 @@ owl:Class
           [
             rdf:type sp:Bind ;
             sp:expression [
-                rdf:type sp:coalesce ;
-                sp:arg1 [
-                    sp:varName "label" ;
-                  ] ;
-                sp:arg2 [
-                    sp:varName "lentity" ;
-                  ] ;
-              ] ;
-            sp:variable [
-                sp:varName "prefLabel" ;
-              ] ;
-          ]
-          [
-            rdf:type sp:Bind ;
-            sp:expression [
-                rdf:type sp:strlang ;
+                rdf:type sp:replace ;
                 sp:arg1 [
                     rdf:type sp:replace ;
                     sp:arg1 [
@@ -822,34 +711,59 @@ owl:Class
                             sp:arg1 [
                                 rdf:type sp:replace ;
                                 sp:arg1 [
-                                    rdf:type sp:replace ;
-                                    sp:arg1 [
-                                        rdf:type sp:replace ;
-                                        sp:arg1 [
-                                            sp:varName "prefLabel" ;
-                                          ] ;
-                                        sp:arg2 "”" ;
-                                        sp:arg3 "\"" ;
-                                      ] ;
-                                    sp:arg2 "“" ;
-                                    sp:arg3 "\"" ;
+                                    sp:varName "lentity" ;
                                   ] ;
-                                sp:arg2 "–" ;
-                                sp:arg3 "-" ;
+                                sp:arg2 "”" ;
+                                sp:arg3 "\"" ;
                               ] ;
-                            sp:arg2 "’" ;
-                            sp:arg3 "'" ;
+                            sp:arg2 "“" ;
+                            sp:arg3 "\"" ;
                           ] ;
-                        sp:arg2 "‘" ;
-                        sp:arg3 "'" ;
+                        sp:arg2 "–" ;
+                        sp:arg3 "-" ;
                       ] ;
-                    sp:arg2 "( .)|(^.)" ;
-                    sp:arg3 "uc($1$2)" ;
+                    sp:arg2 "’" ;
+                    sp:arg3 "'" ;
                   ] ;
-                sp:arg2 "en" ;
+                sp:arg2 "‘" ;
+                sp:arg3 "'" ;
               ] ;
             sp:variable [
-                sp:varName "titLabel" ;
+                sp:varName "altlabel" ;
+              ] ;
+          ]
+          [
+            rdf:type sp:Bind ;
+            sp:expression [
+                rdf:type sp:replace ;
+                sp:arg1 [
+                    rdf:type sp:replace ;
+                    sp:arg1 [
+                        rdf:type sp:replace ;
+                        sp:arg1 [
+                            rdf:type sp:replace ;
+                            sp:arg1 [
+                                rdf:type sp:replace ;
+                                sp:arg1 [
+                                    sp:varName "oldlabel" ;
+                                  ] ;
+                                sp:arg2 "”" ;
+                                sp:arg3 "\"" ;
+                              ] ;
+                            sp:arg2 "“" ;
+                            sp:arg3 "\"" ;
+                          ] ;
+                        sp:arg2 "–" ;
+                        sp:arg3 "-" ;
+                      ] ;
+                    sp:arg2 "’" ;
+                    sp:arg3 "'" ;
+                  ] ;
+                sp:arg2 "‘" ;
+                sp:arg3 "'" ;
+              ] ;
+            sp:variable [
+                sp:varName "preflabel" ;
               ] ;
           ]
           [
@@ -888,7 +802,7 @@ owl:Class
               ] ;
           ]
         ) ;
-      rdfs:comment "Rule 2" ;
+      rdfs:comment "Classes and Datatypes become Concepts" ;
     ] ;
   spin:rule [
       rdf:type sp:Construct ;
@@ -912,6 +826,26 @@ owl:Class
               ] ;
           ]
         ) ;
+      sp:text """# Rule 2
+CONSTRUCT {
+    ?skentity skos:prefLabel ?titLabel .
+    ?skentity rdfs:isDefinedBy ?entity .
+}
+WHERE {
+    ?entity a owl:Class .
+    FILTER regex(xsd:string(?entity), \"edmcouncil\") .
+    FILTER NOT EXISTS {
+        ?entity owl:deprecated true . 
+    } .
+    skos:Concept skosify:px ?px .
+    FILTER (!isBlank(?entity)) .
+    ?entity rdfs:label ?label .
+    FILTER regex(xsd:string(?entity), \"edmc\", \"i\") .
+    BIND (REPLACE(str(?entity), \"^.*(#|/)\", \"\") AS ?lentity) .
+    BIND (xsd:string(COALESCE(?label, ?lentity)) AS ?prefLabel) .
+    BIND (STRLANG(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(?prefLabel, \"”\", \"\\\"\"), \"“\", \"\\\"\"), \"–\", \"-\"), \"’\", \"'\"), \"‘\", \"'\"), \"( .)|(^.)\", \"uc($1$2)\"), \"en\") AS ?titLabel) .
+    BIND (URI(skosify:subs(?entity, CONCAT(?px, ENCODE_FOR_URI(str(?lentity))))) AS ?skentity) .
+}""" ;
       sp:where (
           [
             sp:object owl:Class ;
@@ -1101,6 +1035,231 @@ owl:Class
         ) ;
       rdfs:comment "Rule 2" ;
     ] ;
+  spin:rule [
+      rdf:type sp:Construct ;
+      sp:templates (
+          [
+            sp:object [
+                sp:varName "titLabel" ;
+              ] ;
+            sp:predicate skos:prefLabel ;
+            sp:subject [
+                sp:varName "skentity" ;
+              ] ;
+          ]
+          [
+            sp:object [
+                sp:varName "entity" ;
+              ] ;
+            sp:predicate rdfs:isDefinedBy ;
+            sp:subject [
+                sp:varName "skentity" ;
+              ] ;
+          ]
+        ) ;
+      sp:text """# Rule 2
+CONSTRUCT { 
+    ?skentity skos:prefLabel ?titLabel .
+    ?skentity rdfs:isDefinedBy ?entity .
+}
+WHERE {
+    ?entity a rdfs:Datatype .
+    FILTER regex(xsd:string(?entity), \"edmcouncil\") .
+    FILTER NOT EXISTS {
+        ?entity owl:deprecated true .
+    } .
+    skos:Concept skosify:px ?px .
+    FILTER (!isBlank(?entity)) .
+    OPTIONAL {
+        ?entity rdfs:label ?label .
+    } .
+    BIND (REPLACE(str(?entity), \"^.*(#|/)\", \"\") AS ?lentity) .
+    BIND (COALESCE(?label, ?lentity) AS ?prefLabel) .
+    BIND (STRLANG(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(?prefLabel, \"”\", \"\\\"\"), \"“\", \"\\\"\"), \"–\", \"-\"), \"’\", \"'\"), \"‘\", \"'\"), \"( .)|(^.)\", \"uc($1$2)\"), \"en\") AS ?titLabel) .
+    BIND (URI(skosify:subs(?entity, CONCAT(?px, REPLACE(ENCODE_FOR_URI(str(?lentity)), \"^.\", \"uc($0)\")))) AS ?skentity) .
+}""" ;
+      sp:where (
+          [
+            sp:object rdfs:Datatype ;
+            sp:predicate rdf:type ;
+            sp:subject [
+                sp:varName "entity" ;
+              ] ;
+          ]
+          [
+            rdf:type sp:Filter ;
+            sp:expression [
+                rdf:type sp:regex ;
+                sp:arg1 [
+                    rdf:type xsd:string ;
+                    sp:arg1 [
+                        sp:varName "entity" ;
+                      ] ;
+                  ] ;
+                sp:arg2 "edmcouncil" ;
+              ] ;
+          ]
+          [
+            rdf:type sp:Filter ;
+            sp:expression [
+                rdf:type sp:notExists ;
+                sp:elements (
+                    [
+                      sp:object "true"^^xsd:boolean ;
+                      sp:predicate owl:deprecated ;
+                      sp:subject [
+                          sp:varName "entity" ;
+                        ] ;
+                    ]
+                  ) ;
+              ] ;
+          ]
+          [
+            sp:object [
+                sp:varName "px" ;
+              ] ;
+            sp:predicate skosify:px ;
+            sp:subject skos:Concept ;
+          ]
+          [
+            rdf:type sp:Filter ;
+            sp:expression [
+                rdf:type sp:not ;
+                sp:arg1 [
+                    rdf:type sp:isBlank ;
+                    sp:arg1 [
+                        sp:varName "entity" ;
+                      ] ;
+                  ] ;
+              ] ;
+          ]
+          [
+            rdf:type sp:Optional ;
+            sp:elements (
+                [
+                  sp:object [
+                      sp:varName "label" ;
+                    ] ;
+                  sp:predicate rdfs:label ;
+                  sp:subject [
+                      sp:varName "entity" ;
+                    ] ;
+                ]
+              ) ;
+          ]
+          [
+            rdf:type sp:Bind ;
+            sp:expression [
+                rdf:type sp:replace ;
+                sp:arg1 [
+                    rdf:type sp:str ;
+                    sp:arg1 [
+                        sp:varName "entity" ;
+                      ] ;
+                  ] ;
+                sp:arg2 "^.*(#|/)" ;
+                sp:arg3 "" ;
+              ] ;
+            sp:variable [
+                sp:varName "lentity" ;
+              ] ;
+          ]
+          [
+            rdf:type sp:Bind ;
+            sp:expression [
+                rdf:type sp:coalesce ;
+                sp:arg1 [
+                    sp:varName "label" ;
+                  ] ;
+                sp:arg2 [
+                    sp:varName "lentity" ;
+                  ] ;
+              ] ;
+            sp:variable [
+                sp:varName "prefLabel" ;
+              ] ;
+          ]
+          [
+            rdf:type sp:Bind ;
+            sp:expression [
+                rdf:type sp:strlang ;
+                sp:arg1 [
+                    rdf:type sp:replace ;
+                    sp:arg1 [
+                        rdf:type sp:replace ;
+                        sp:arg1 [
+                            rdf:type sp:replace ;
+                            sp:arg1 [
+                                rdf:type sp:replace ;
+                                sp:arg1 [
+                                    rdf:type sp:replace ;
+                                    sp:arg1 [
+                                        rdf:type sp:replace ;
+                                        sp:arg1 [
+                                            sp:varName "prefLabel" ;
+                                          ] ;
+                                        sp:arg2 "”" ;
+                                        sp:arg3 "\"" ;
+                                      ] ;
+                                    sp:arg2 "“" ;
+                                    sp:arg3 "\"" ;
+                                  ] ;
+                                sp:arg2 "–" ;
+                                sp:arg3 "-" ;
+                              ] ;
+                            sp:arg2 "’" ;
+                            sp:arg3 "'" ;
+                          ] ;
+                        sp:arg2 "‘" ;
+                        sp:arg3 "'" ;
+                      ] ;
+                    sp:arg2 "( .)|(^.)" ;
+                    sp:arg3 "uc($1$2)" ;
+                  ] ;
+                sp:arg2 "en" ;
+              ] ;
+            sp:variable [
+                sp:varName "titLabel" ;
+              ] ;
+          ]
+          [
+            rdf:type sp:Bind ;
+            sp:expression [
+                rdf:type sp:uri ;
+                sp:arg1 [
+                    rdf:type skosify:subs ;
+                    arg:a1 [
+                        sp:varName "entity" ;
+                      ] ;
+                    arg:a2 [
+                        rdf:type sp:concat ;
+                        sp:arg1 [
+                            sp:varName "px" ;
+                          ] ;
+                        sp:arg2 [
+                            rdf:type sp:replace ;
+                            sp:arg1 [
+                                rdf:type sp:encode_for_uri ;
+                                sp:arg1 [
+                                    rdf:type sp:str ;
+                                    sp:arg1 [
+                                        sp:varName "lentity" ;
+                                      ] ;
+                                  ] ;
+                              ] ;
+                            sp:arg2 "^." ;
+                            sp:arg3 "uc($0)" ;
+                          ] ;
+                      ] ;
+                  ] ;
+              ] ;
+            sp:variable [
+                sp:varName "skentity" ;
+              ] ;
+          ]
+        ) ;
+      rdfs:comment "Rule 2" ;
+    ] ;
 .
 owl:Thing
   spin:rule [
@@ -1168,6 +1327,43 @@ owl:Thing
               ] ;
           ]
         ) ;
+      sp:text """# Rule 9
+CONSTRUCT {
+    ?skpprop a owl:ObjectProperty .
+    ?skpprop rdfs:subPropertyOf skos:related .
+    ?skpprop rdfs:label ?predx .
+    ?skpprop rdfs:isDefinedBy ?y .
+    ?skpsubject ?skpprop ?skpobject .
+    ?skpsubject rdfs:isDefinedBy ?s . 
+    ?skpobject rdfs:isDefinedBy ?z .
+}
+WHERE {
+    skos:Concept skosify:px ?px .
+    ?s rdfs:subClassOf|owl:equivalentClass ?x .
+    ?x a owl:Restriction .
+    ?x owl:onProperty ?y .
+    ?y a owl:ObjectProperty .
+    FILTER NOT EXISTS {
+        ?y owl:deprecated true .
+    } .
+    FILTER NOT EXISTS {
+        ?s owl:deprecated true .
+    } .
+    OPTIONAL {
+        ?y rdfs:label ?yL .
+    } .
+    ?x ((owl:onClass|owl:someValuesFrom)|owl:allValuesFrom)|owl:onDataRange ?z .
+    ?z a _:0 .
+    FILTER (!isBlank(?z)) .
+    BIND (REPLACE(str(?y), \"^.*(#|/)\", \"\") AS ?yStr) .
+    BIND (REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(COALESCE(?yL, ?yStr), \"\", \"\\\"\"), \"\", \"\\\"\"), \"\", \"-\"), \"\", \"'\"), \"\", \"'\") AS ?predx) .
+    BIND (REPLACE(str(?z), \"^.*(#|/)\", \"\") AS ?xpobject) .
+    BIND (REPLACE(str(?s), \"^.*(#|/)\", \"\") AS ?xpsubject) .
+    BIND (URI(skosify:subs(?z, CONCAT(?px, ENCODE_FOR_URI(str(?xpobject))))) AS ?skpobject) .
+    BIND (URI(skosify:subs(?s, CONCAT(?px, ENCODE_FOR_URI(str(?xpsubject))))) AS ?skpsubject) .
+    BIND (URI(skosify:subs(?y, CONCAT(?px, ENCODE_FOR_URI(str(?yStr))))) AS ?skpprop) .
+    BIND (CONCAT(?xpsubject, \" <- \", \" has a restriction involving \", ?yStr, \" and \", ?xpobject) AS ?hist) .
+}""" ;
       sp:where (
           [
             sp:object [
@@ -1570,6 +1766,80 @@ owl:Thing
               ] ;
           ]
         ) ;
+      sp:text """# Rule 4
+# It looks as if some of these are daisy-chains. Here we turn restrictions into direct links.
+# This looks as if we have two branches, one for isPlayedBy and one for playsRole - why are they separate?
+# I think property paths will simplify this a lot,perhaps obviating the need for the union.
+CONSTRUCT {
+    ?skpprop a owl:ObjectProperty .
+    ?skpprop rdfs:subPropertyOf skos:related .
+    ?skpprop skos:prefLabel ?predx .
+    ?skpprop rdfs:isDefinedBy ?w . 
+    ?skpsubject ?skpprop ?skpobject .
+    ?skpobject rdfs:isDefinedBy ?p . 
+    ?skpsubject rdfs:isDefinedBy ?s .
+}
+WHERE {
+    {
+        ?s rdfs:subClassOf ?x .
+        skos:Concept skosify:px ?px .
+        ?x a owl:Restriction .
+        ?x (owl:someValuesFrom|owl:allValuesFrom)|owl:onClass ?z .
+        ?x owl:onProperty ?y .
+        FILTER (?y = <http://spec.edmcouncil.org/fibo/FND/Parties/Roles/isPlayedBy>) .
+        OPTIONAL {
+            ?y rdfs:label ?yL .
+        } .
+        ?z owl:onProperty ?w .
+        ?z ((owl:someValuesFrom|owl:allValuesFrom)|owl:onClass)|owl:onDataRange ?p .
+        FILTER (!regex(xsd:string(?p), \"vocabulary\")) .
+        FILTER NOT EXISTS {
+            ?s owl:deprecated true .
+        } .
+        FILTER (?p != owl:Thing) .
+        BIND (REPLACE(str(?w), \"^.*(#|/)\", \"\") AS ?wStr) .
+        BIND (REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(COALESCE(?wL, ?yStr), \"\", \"\\\"\"), \"\", \"\\\"\"), \"\", \"-\"), \"\", \"'\"), \"\", \"'\") AS ?predx) .
+        BIND (REPLACE(str(?p), \"^.*(#|/)\", \"\") AS ?xpobject) .
+        BIND (IF(EXISTS {
+            ?parent a rdfs:Datatype .
+        }, REPLACE(ENCODE_FOR_URI(str(?lparent)), \"^.\", \"uc($0)\"), ENCODE_FOR_URI(?lparent)) AS ?lcpparent) .
+        BIND (REPLACE(str(?s), \"^.*(#|/)\", \"\") AS ?xpsubject) .
+        BIND (URI(skosify:subs(?p, CONCAT(?px, IF(EXISTS {
+            ?p a rdfs:Datatype .
+        }, REPLACE(ENCODE_FOR_URI(str(?xpobject)), \"^.\", \"uc($0)\"), ENCODE_FOR_URI(str(?xpobject)))))) AS ?skpobject) .
+        BIND (URI(skosify:subs(?s, CONCAT(?px, ENCODE_FOR_URI(str(?xpsubject))))) AS ?skpsubject) .
+        BIND (URI(skosify:subs(?w, CONCAT(?px, ENCODE_FOR_URI(str(?wStr))))) AS ?skpprop) .
+    }
+    UNION
+    {
+        ?s rdfs:subClassOf ?x .
+        skos:Concept skosify:px ?px .
+        ?x a owl:Restriction .
+        ?x ((owl:someValuesFrom|owl:allValuesFrom)|owl:onClass)|owl:onDataRange ?z .
+        ?x owl:onProperty ?w .
+        OPTIONAL {
+            ?w rdfs:label ?wL .
+        } .
+        ?z owl:onProperty ?y .
+        FILTER (?y = <http://spec.edmcouncil.org/fibo/FND/Parties/Roles/playsRole>) .
+        ?z (owl:someValuesFrom|owl:allValuesFrom)|owl:onClass ?p .
+        FILTER NOT EXISTS {
+            ?p owl:deprecated true .
+        } .
+        FILTER NOT EXISTS {
+            ?s owl:deprecated true .
+        } .
+        BIND (REPLACE(str(?w), \"^.*(#|/)\", \"\") AS ?wStr) .
+        BIND (REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(COALESCE(?wL, ?yStr), \"\", \"\\\"\"), \"\", \"\\\"\"), \"\", \"-\"), \"\", \"'\"), \"\", \"'\") AS ?predx) .
+        BIND (REPLACE(str(?p), \"^.*(#|/)\", \"\") AS ?xpobject) .
+        BIND (REPLACE(str(?s), \"^.*(#|/)\", \"\") AS ?xpsubject) .
+        BIND (URI(skosify:subs(?p, CONCAT(?px, IF(EXISTS {
+            ?p a rdfs:Datatype .
+        }, REPLACE(ENCODE_FOR_URI(str(?xpobject)), \"^.\", \"uc($0)\"), ENCODE_FOR_URI(str(?xpobject)))))) AS ?skpobject) .
+        BIND (URI(skosify:subs(?s, CONCAT(?px, ENCODE_FOR_URI(str(?xpsubject))))) AS ?skpsubject) .
+        BIND (URI(skosify:subs(?w, CONCAT(?px, ENCODE_FOR_URI(str(?wStr))))) AS ?skpprop) .
+    } .
+}""" ;
       sp:where (
           [
             rdf:type sp:Union ;
@@ -2366,6 +2636,41 @@ I think property paths will simplify this a lot,perhaps obviating the need for t
               ] ;
           ]
         ) ;
+      sp:text """# Rule 13
+CONSTRUCT {
+    ?skpprop a owl:ObjectProperty .
+    ?skdomain ?skpprop ?skrange . 
+    ?skpprop rdfs:subPropertyOf skos:related .
+    ?skpprop rdfs:isDefinedBy ?p .
+}
+WHERE {
+    skos:Concept skosify:px ?px .
+    ?p a owl:ObjectProperty .
+    FILTER NOT EXISTS {
+        ?p owl:deprecated true .
+    } .
+    FILTER (!regex(xsd:string(?p), \"vocabulary\")) .
+    OPTIONAL {
+        ?p rdfs:domain ?d .
+        ?d a _:0 .
+        FILTER NOT EXISTS {
+            ?d owl:deprecated true .
+        } .
+    } .
+    OPTIONAL {
+        ?p rdfs:range ?r .
+        ?r a _:1 .
+        FILTER NOT EXISTS {
+            ?r owl:deprecated true .
+        } .
+    } .
+    BIND (REPLACE(str(?p), \"^.*(#|/)\", \"\") AS ?pStr) .
+    BIND (URI(skosify:subs(?p, CONCAT(?px, ENCODE_FOR_URI(str(?pStr))))) AS ?skpprop) .
+    BIND (REPLACE(str(?d), \"^.*(#|/)\", \"\") AS ?dStr) .
+    BIND (URI(skosify:subs(?d, CONCAT(?px, ENCODE_FOR_URI(str(?dStr))))) AS ?skdomain) .
+    BIND (REPLACE(str(?r), \"^.*(#|/)\", \"\") AS ?rStr) .
+    BIND (URI(skosify:subs(?r, CONCAT(?px, ENCODE_FOR_URI(str(?rStr))))) AS ?skrange) .
+}""" ;
       sp:where (
           [
             sp:object [
@@ -2700,6 +3005,46 @@ I think property paths will simplify this a lot,perhaps obviating the need for t
               ] ;
           ]
         ) ;
+      sp:text """# Rule 10
+CONSTRUCT {
+    ?sksubject a owl:ObjectProperty .
+    ?sksubject rdfs:subPropertyOf skos:related .
+    ?skobject a owl:ObjectProperty .
+    ?skobject rdfs:subPropertyOf skos:related .
+    ?sksubject owl:inverseOf ?skobject .
+    ?skobject owl:inverseOf ?sksubject .
+    ?sksubject rdfs:isDefinedBy ?subject . 
+    ?skobject rdfs:isDefinedBy ?object .
+}
+WHERE {
+    ?subject owl:inverseOf ?object .
+    FILTER NOT EXISTS {
+        ?subject owl:deprecated true .
+    } .
+    FILTER NOT EXISTS {
+        ?object owl:deprecated true .
+    } .
+    skos:Concept skosify:px ?px .
+    FILTER (!regex(str(?subject), CONCAT(\"^\", REPLACE(?px, \"[{].[}]\", \".*\")))) .
+    FILTER (!regex(str(?object), CONCAT(\"^\", REPLACE(?px, \"[{].[}]\", \".*\")))) .
+    FILTER (!isBlank(?subject)) .
+    OPTIONAL {
+        ?subject rdfs:label ?slabel .
+    } .
+    OPTIONAL {
+        ?object rdfs:label ?olabel .
+    } .
+    BIND (REPLACE(str(?subject), \"^.*(#|/)\", \"\") AS ?lsubject) .
+    BIND (REPLACE(str(?object), \"^.*(#|/)\", \"\") AS ?lobject) .
+    BIND (COALESCE(?slabel, ?lsubject) AS ?psubject) .
+    BIND (COALESCE(?olabel, ?lobject) AS ?pobject) .
+    BIND (STRLANG(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(?psubject, \"\", \"\\\"\"), \"\", \"\\\"\"), \"\", \"-\"), \"\", \"'\"), \"\", \"'\"), \"en\") AS ?titsubject) .
+    BIND (STRLANG(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(?pobject, \"\", \"\\\"\"), \"\", \"\\\"\"), \"\", \"-\"), \"\", \"'\"), \"\", \"'\"), \"en\") AS ?titobject) .
+    BIND (URI(skosify:subs(?subject, CONCAT(?px, ENCODE_FOR_URI(str(?lsubject))))) AS ?sksubject) .
+    BIND (URI(skosify:subs(?object, CONCAT(?px, ENCODE_FOR_URI(str(?lobject))))) AS ?skobject) .
+    FILTER (?sksubject != ?subject) .
+    FILTER (?skobject != ?object) .
+}""" ;
       sp:where (
           [
             sp:object [
@@ -3072,6 +3417,31 @@ I think property paths will simplify this a lot,perhaps obviating the need for t
       rdf:type sp:Construct ;
       sp:templates (
           [
+            sp:object <http://www.w3.org/2004/02/skos/core> ;
+            sp:predicate owl:imports ;
+            sp:subject <https://spec.edmcouncil.org/fibo/vocabulary> ;
+          ]
+          [
+            sp:object owl:Ontology ;
+            sp:predicate rdf:type ;
+            sp:subject <https://spec.edmcouncil.org/fibo/vocabulary> ;
+          ]
+        ) ;
+      sp:text """# Rule 6
+CONSTRUCT {
+    <https://spec.edmcouncil.org/fibo/vocabulary> owl:imports <http://www.w3.org/2004/02/skos/core> .
+    <https://spec.edmcouncil.org/fibo/vocabulary> a owl:Ontology . 
+}
+WHERE {
+
+}""" ;
+      sp:where () ;
+      rdfs:comment "Rule 6" ;
+    ] ;
+  spin:rule [
+      rdf:type sp:Construct ;
+      sp:templates (
+          [
             sp:object skos:ConceptScheme ;
             sp:predicate rdf:type ;
             sp:subject [
@@ -3079,6 +3449,13 @@ I think property paths will simplify this a lot,perhaps obviating the need for t
               ] ;
           ]
         ) ;
+      sp:text """CONSTRUCT {
+    ?cs a skos:ConceptScheme .
+}
+WHERE { 
+    skos:Concept skosify:px ?px .
+    BIND (URI(REPLACE(CONCAT(?px, \"FIBO-CS\"), \"[{]M[}]|[{]D[}]|[{]O[}]\", \"core\")) AS ?cs) .
+}""" ;
       sp:where (
           [
             sp:object [
@@ -3141,6 +3518,19 @@ I think property paths will simplify this a lot,perhaps obviating the need for t
               ] ;
           ]
         ) ;
+      sp:text """CONSTRUCT {
+    ?c dcterms:isPartOf ?domain .
+    ?c <https://spec.edmcouncil.org/fibo/vocabulary#hasDomain> ?domainLabel .
+    ?c <https://spec.edmcouncil.org/fibo/vocabulary#hasSubDomain> ?subDomain . 
+}
+WHERE {
+    ?c rdfs:isDefinedBy ?s .
+    FILTER regex(str(?c), \"vocabulary\") .
+    BIND (URI(skosify:subs(?s, \"https://spec.edmcouncil.org/fibo/{D}/About{D}/{D}Specification\")) AS ?domain) .
+    BIND (skosify:subs(?s, \"{D}\") AS ?dabbrev) .
+    BIND (IF((?dabbrev = \"BE\"), \"Business Entities\", IF((?dabbrev = \"FBC\"), \"Financial Business and Commerce\", IF((?dabbrev = \"IND\"), \"Indices and Indicators\", IF((?dabbrev = \"SEC\"), \"Securities\", IF((?dabbrev = \"LOAN\"), \"Loans\", IF((?dabbrev = \"DER\"), \"Derivatives\", IF((?dabbrev = \"FND\"), \"Foundations\", IF((?dabbrev = \"MD\"), \"Market Data\", IF((?dabbrev = \"CAE\"), \"Corporate Actions\", IF((?dabbrev = \"CIV\"), \"Corporate Actions\", IF((?dabbrev = \"BP\"), \"Business Process\", ?dabbrev))))))))))) AS ?domainLabel) .
+    BIND (skosify:subs(?s, \"{S}\") AS ?subDomain) .
+}""" ;
       sp:where (
           [
             sp:object [
@@ -3360,6 +3750,37 @@ I think property paths will simplify this a lot,perhaps obviating the need for t
               ] ;
           ]
         ) ;
+      sp:text """# Rule 8a
+CONSTRUCT {
+    ?skentity skos:definition ?note .
+    ?skentity rdfs:isDefinedBy ?x .
+}
+WHERE {
+    skos:Concept skosify:px ?px .
+    ?x dcterms:description ?it .
+    FILTER NOT EXISTS {
+        ?x a owl:NamedIndividual .
+    } .
+    FILTER NOT EXISTS {
+        ?x owl:deprecated true .
+    } .
+    BIND (REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(xsd:string(?it), \"\", \"\\\"\"), \"\", \"\\\"\"), \"\", \"-\"), \"\", \"'\"), \"\", \"'\") AS ?note) .
+    BIND (CONCAT(\"Copy values for \", REPLACE(str(?thep), \"^.*(#|/)\", \"\"), \"(08)\") AS ?hist) .
+    BIND (REPLACE(str(?x), \"^.*(#|/)\", \"\") AS ?lentity) .
+    BIND (REPLACE(REPLACE(str(?x), \"(/|#)[^/]*$\", \"\"), \"^.*/\", \"\") AS ?module) . 
+    BIND (IF(EXISTS {
+        ?x a rdfs:Datatype .
+    }, REPLACE(str(?lentity), \"^.\", \"uc($0)\"), str(?lentity)) AS ?lencode) .
+    BIND (URI(skosify:subs(?lentity, CONCAT(?px, ENCODE_FOR_URI(?lencode)))) AS ?skentity) .
+    FILTER (?x != ?skentity) .
+    FILTER (!regex(str(?x), CONCAT(\"^\", REPLACE(?px, \"[{].[}]\", \".*\")))) .
+    FILTER (!regex(xsd:string(?x), \"vocabulary\")) .
+    FILTER NOT EXISTS {
+        ?x a sm:SpecificationVersion .
+    } .
+    ?x a ?type .
+    FILTER (?type NOT IN (owl:AnnotationProperty, owl:DatatypeProperty, owl:FunctionalProperty)) .
+}""" ;
       sp:where (
           [
             sp:object [
@@ -3688,6 +4109,41 @@ I think property paths will simplify this a lot,perhaps obviating the need for t
               ] ;
           ]
         ) ;
+      sp:text """# Rule 8
+CONSTRUCT {
+    ?skentity ?thep ?note .
+    ?skentity rdfs:isDefinedBy ?x .
+}
+WHERE {
+    skos:Concept skosify:px ?px .
+    ?x ?thep1 ?it .
+    FILTER NOT EXISTS {
+        ?x owl:deprecated true .
+    } .
+    BIND (REPLACE(str(?thep1), \"^.*(#|/)\", \"\") AS ?lnp1) . 
+    FILTER (?lnp1 IN (\"changeNote\", \"definition\", \"historyNote\", \"editorialNote\", \"example\", \"note\", \"scopeNote\", \"adaptedFrom\", \"definitionOrigin\", \"synonym\", \"explanatoryNote\")) .
+    BIND (IF((?lnp1 = \"synonym\"), skos:altLabel, ?thep1) AS ?thep) .
+    BIND (CONCAT(\"This is rule 8 \", xsd:string(?thep1)) AS ?comment) .
+    FILTER NOT EXISTS {
+        ?x a owl:NamedIndividual .
+    } .
+    BIND (REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(xsd:string(?it), \"\", \"\\\"\"), \"\", \"\\\"\"), \"\", \"-\"), \"\", \"'\"), \"\", \"'\") AS ?note) .
+    BIND (CONCAT(\"Copy values for \", REPLACE(str(?thep), \"^.*(#|/)\", \"\"), \"(08)\") AS ?hist) .
+    BIND (REPLACE(str(?x), \"^.*(#|/)\", \"\") AS ?lentity) .
+    BIND (REPLACE(REPLACE(str(?x), \"(/|#)[^/]*$\", \"\"), \"^.*/\", \"\") AS ?module) .
+    BIND (IF(EXISTS {
+        ?x a rdfs:Datatype .
+    }, REPLACE(ENCODE_FOR_URI(str(?lentity)), \"^.\", \"uc($0)\"), ENCODE_FOR_URI(str(?lentity))) AS ?lencode) .
+    BIND (URI(skosify:subs(?x, CONCAT(?px, ?lencode))) AS ?skentity) .
+    FILTER (?x != ?skentity) .
+    FILTER (!regex(str(?x), CONCAT(\"^\", REPLACE(?px, \"[{]M[}]|[{]D[}]|[{]O[}]\", \".*\")))) .
+    FILTER (!regex(str(?x), \"vocabulary\")) .
+    FILTER NOT EXISTS {
+        ?x a sm:SpecificationVersion .
+    } .
+    ?x a ?type .
+    FILTER (?type NOT IN (owl:AnnotationProperty, owl:DatatypeProperty, owl:FunctionalProperty)) .
+}""" ;
       sp:where (
           [
             sp:object [
@@ -4101,6 +4557,33 @@ I think property paths will simplify this a lot,perhaps obviating the need for t
               ] ;
           ]
         ) ;
+      sp:text """# Rule 7
+CONSTRUCT {
+    ?skchild skos:broader ?skparent .
+    ?skchild rdfs:isDefinedBy ?child .
+    ?skparent rdfs:isDefinedBy ?parent .
+}
+WHERE {
+    ?child rdfs:subClassOf ?parent .
+    FILTER regex(xsd:string(?parent), \"edmcouncil\") . 
+    FILTER NOT EXISTS {
+        ?child owl:deprecated true .
+    } .
+    FILTER (?parent != owl:Thing) .
+    FILTER (?parent != skos:Concept) .
+    FILTER NOT EXISTS {
+        ?parent owl:deprecated true .
+    } .
+    skos:Concept skosify:px ?px .
+    FILTER (!isBlank(?parent)) .
+    BIND (REPLACE(str(?parent), \"^.*(#|/)\", \"\") AS ?lparent) .
+    BIND (REPLACE(str(?child), \"^.*(#|/)\", \"\") AS ?lchild) .
+    BIND (IF(EXISTS {
+        ?parent a rdfs:Datatype .
+    }, REPLACE(ENCODE_FOR_URI(str(?lparent)), \"^.\", \"uc($0)\"), ENCODE_FOR_URI(?lparent)) AS ?lcpparent) .
+    BIND (URI(skosify:subs(?parent, CONCAT(?px, ?lcpparent))) AS ?skparent) .
+    BIND (URI(skosify:subs(?child, CONCAT(?px, ENCODE_FOR_URI(str(?lchild))))) AS ?skchild) .
+}""" ;
       sp:where (
           [
             sp:object [
@@ -4324,17 +4807,6 @@ I think property paths will simplify this a lot,perhaps obviating the need for t
           ]
         ) ;
       rdfs:comment "Rule 7" ;
-    ] ;
-  spin:rule [
-      rdf:type sp:Construct ;
-      sp:text """# Rule 6
-CONSTRUCT {
-    <https://spec.edmcouncil.org/fibo/vocabulary> owl:imports <http://www.w3.org/2004/02/skos/core> .
-    <https://spec.edmcouncil.org/fibo/vocabulary> a owl:Ontology .
-}
-WHERE {
-
-}""" ;
     ] ;
 .
 skos:Concept
