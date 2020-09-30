@@ -81,9 +81,32 @@ function getBannerFromSparqlTestFile() {
   grep "banner" "${hygieneTestSparqlFile}" | cut -d\  -f 3-
 }
 
+#
+# List the templated hygiene test files
+#
 function getHygieneTestFiles() {
 
-  find "${source_family_root}/etc" -name 'testHygiene*.sparql'
+  templated_hygiene_file_dir="${tag_root}/templated_hygiene_test_files"
+  find "${templated_hygiene_file_dir}" -name 'testHygiene*.sparql'
+}
+
+#
+# Perform templating on hygiene test files
+#
+function prepareHygieneTestFiles() {
+
+  test_subdir=${HYGIENE_TEST_SUBDIR:-etc}
+
+  templated_hygiene_file_dir="${tag_root}/templated_hygiene_test_files"
+
+  # ensure directory for templated files is created and clear
+  mkdir -p "${templated_hygiene_file_dir}"
+  rm -rf "${templated_hygiene_file_dir}/*"
+
+  while IFS= read -r -d '' test_file_path ; do
+    filename=$(basename "${test_file_path}")
+    sed -e "s/\${NAMESPACE_REGEX}/${HYGIENE_NAMESPACE_REGEX}/g" "${test_file_path}" > "${templated_hygiene_file_dir}/${filename}"
+  done < <(find "${source_family_root}/${HYGIENE_TEST_SUBDIR}" -name 'testHygiene*.sparql' -print0)
 }
 
 #
@@ -98,19 +121,39 @@ function runHygieneTests() {
   #
   # Get ontologies for Dev
   #
-  log "Merging all dev ontologies into one RDF file: $(logFileName ${tag_root}/DEV.ttl)"
-  "${JENA_ARQ}" $(find "${source_family_root}" -name "*.rdf" | grep -v "/etc/" | sed "s/^/--data=/") \
+  log "Merging all dev ontologies into one RDF file: ${tag_root}/DEV.ttl"
+  if [[ "${ONTPUB_EXLUDED}" ]] ; then
+    log "excluding ontologies matching \"${ONTPUB_EXCLUDED}\""
+  fi
+
+  dev_ont_dir="${TMPDIR}/dev_ontologies"
+  mkdir -p "$dev_ont_dir"
+
+  dev_jena_command=( ${JENA_ARQ} )
+  while IFS= read -r -d '' ont_file_path ; do
+    if [[ ! "${ONTPUB_EXCLUDED}" || ! "${ont_file_path}" =~ "${ONTPUB_EXCLUDED}" ]] ; then
+      # Each ontology file is copied to a temp dir.
+      # For some reason, Jena arq cannot read rdf files with paths that contain spaces.
+      tmp_file_path="${dev_ont_dir}/${ont_file_path##*/}"
+      cp "${ont_file_path}" "${tmp_file_path}"
+      dev_jena_command+=( --data="$tmp_file_path" )
+    fi
+  done < <(find "${source_family_root}/${ONTPUB_SUBDIR}" -regex '.*\.\(rdf\|ttl\|jsonld\)' -print0)
+
+  "${dev_jena_command[@]}" \
     --query=/publisher/lib/echo.sparql \
-    --results=TTL > ${tag_root}/DEV.ttl
+    --results=TTL > "${tag_root}/DEV.ttl" || return $?
 
   #
   # Get ontologies for Prod
   #
-  log "Merging all prod ontologies into one RDF file: : $(logFileName ${tag_root}/PROD.ttl)"
+  log "Merging all prod ontologies into one RDF file: : ${tag_root}/PROD.ttl)"
   "${JENA_ARQ}" \
     $(grep -r 'utl-av[:;.]Release' "${source_family_root}" | sed 's/:.*$//;s/^/--data=/' | grep -F ".rdf") \
     --query=/publisher/lib/echo.sparql \
-    --results=TTL > ${tag_root}/PROD.ttl
+    --results=TTL > "${tag_root}/PROD.ttl"
+
+  prepareHygieneTestFiles
 
   logRule "Will run the following tests:"
 
@@ -123,11 +166,17 @@ function runHygieneTests() {
 
   logRule "Errors in DEV:"
 
+  dev_log_file="${tag_root}/hygiene_test.$(date +%Y%m%d%H%M%S).dev.log"
+  dev_xml_file="${tag_root}/hygiene_test.dev.xml"
+
+  touch "${dev_log_file}"
+
   while read -r hygieneTestSparqlFile ; do
     banner=$(getBannerFromSparqlTestFile "${hygieneTestSparqlFile}")
     logItem "Running test" "${banner}"
+    echo "TEST: ${banner}" >> "${dev_log_file}"
     ${JENA_ARQ} \
-      --data=${tag_root}/DEV.ttl \
+      --data="${tag_root}/DEV.ttl" \
       --results=csv \
       --query="${hygieneTestSparqlFile}" | \
       sed 's/^\W*PRODERROR:/WARN:/g' | \
@@ -137,13 +186,24 @@ function runHygieneTests() {
       tee -a ${TMPDIR}/console.txt
   done < <(getHygieneTestFiles)
 
+  generate_junit_command=( "${PYTHON3}" )
+  generate_junit_command+=( "${SCRIPT_DIR}/product/ontology/parse_hygiene_log.py" )
+  generate_junit_command+=( "${dev_log_file}" )
+  generate_junit_command+=( "${dev_xml_file}" )
+
+  if [ "${HYGIENE_FAIL_ON_WARNINGS}" = true ] ; then
+    generate_junit_command+=( "--include-warnings" )
+  fi
+
+  "${generate_junit_command[@]}"
+
   logRule "Errors in PROD:"
 
   while read -r hygieneTestSparqlFile ; do
     banner=$(getBannerFromSparqlTestFile "${hygieneTestSparqlFile}")
     logItem "Running test" "${banner}"
     ${JENA_ARQ} \
-      --data=${tag_root}/PROD.ttl \
+      --data="${tag_root}/PROD.ttl" \
       --results=csv \
       --query="${hygieneTestSparqlFile}" | \
       sed 's/^\W*PRODERROR:/ERROR:/g' | \
@@ -155,7 +215,7 @@ function runHygieneTests() {
 
   grep -P "^\t\x1b\x5b\x33\x31\x6dERROR:" ${TMPDIR}/console.txt &>/dev/null && return 1
 
-  rm -f ${TMPDIR}/console.txt
+  # rm -f ${TMPDIR}/console.txt
 
   logRule "Passed all the hygiene tests"
 
@@ -407,6 +467,9 @@ function ontologyFixTopBraidBaseURICookie() {
 
 function ontologyConvertMarkdownToHtml() {
 
+  # Short circuit because this is running on all of our npm dependencies in node_modules
+  return
+
   logStep "ontologyConvertMarkdownToHtml"
 
   if ((pandoc_available == 0)) ; then
@@ -548,7 +611,7 @@ function ontologyZipFiles () {
     ${FIND}  "${family_product_branch_tag}" -name '*catalog*.xml' -print | xargs zip ${zipjsonldDevFile}
 
 
-    
+
 
     ${GREP} -r 'utl-av[:;.]Release' "${family_product_branch_tag}" | ${GREP} -F ".ttl" | ${SED} 's/:.*$//' | xargs zip -r ${zipttlProdFile}
     ${FIND}  "${family_product_branch_tag}" -name '*Load*.ttl' -print | ${GREP} -v "LoadFIBODev.ttl" |  xargs zip ${zipttlProdFile}
@@ -588,7 +651,7 @@ function buildquads () {
 
   local tmpflat="$(mktemp ${TMPDIR}/flatten.XXXXXX.sq)"
   cat >"${tmpflat}" << __HERE__
-PREFIX owl: <http://www.w3.org/2002/07/owl#> 
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
 
 CONSTRUCT {?s ?p ?o}
 WHERE {GRAPH ?g {?s ?p ?o
@@ -599,7 +662,7 @@ __HERE__
 
   local tmpflatecho="$(mktemp ${TMPDIR}/flattecho.XXXXXX.sq)"
   cat >"${tmpflatecho}" << __HERE__
-PREFIX owl: <http://www.w3.org/2002/07/owl#> 
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
 
 CONSTRUCT {?s ?p ?o}
 WHERE {?s ?p ?o
@@ -644,7 +707,7 @@ __HERE__
 
   local lcccr="$(mktemp ${TMPDIR}/LCCCR.XXXXXX.nt)"
   local lcccc="$(mktemp ${TMPDIR}/LCCCC.XXXXXX.nt)"
-  
+
   ${JENA_ARQ} \
       --query=${tmpflatecho} \
       --data=${INPUT}/LCC/Countries/CountryRepresentation.rdf \
@@ -687,7 +750,7 @@ set -x
 	  cat $lcccc >> ${DevFlatNT}
 
 
-	  
+
 	  ${JENA_ARQ} \
                --query="${tmpflat}" \
                --data=${ProdQuadsFile} \
@@ -708,9 +771,9 @@ set -x
 
 	  cat ${prefixes} > "${CSVPrefixes}"
 	  cat ${prefixes} > "${SPARQLPrefixes}"
-	  cat ${tmpbasic} > ${TTLPrefixes} 
+	  cat ${tmpbasic} > ${TTLPrefixes}
 	  sed 's/^/@/;s/$/ ./' ${prefixes} >> ${TTLPrefixes}
-	  
+
 
 	  cat > "${ProdTMPTTL}" <<EOF
 <${tag_root_url}/Prod.fibo-quickstart> a owl:Ontology .
@@ -720,17 +783,17 @@ EOF
 <${tag_root_url}/Dev.fibo-quickstart> a owl:Ontology .
 EOF
 
-	  
+
 	  cat ${TTLPrefixes} ${ProdFlatNT} > "${ProdTMPTTL}"
 
 	  cat ${TTLPrefixes} ${DevFlatNT} > "${DevTMPTTL}"
 
-          
 
-	  
+
+
 	  ${JENA_ARQ} --data="${ProdTMPTTL}" --query="${tmpecho}" --results=TTL > "${ProdFlatTTL}"
 	  ${JENA_ARQ} --data="${DevTMPTTL}" --query="${tmpecho}" --results=TTL > "${DevFlatTTL}"
-	  
+
 
 	  zip ${ProdQuadsFile}.zip ${ProdQuadsFile}
 	  zip ${DevQuadsFile}.zip ${DevQuadsFile}
@@ -739,7 +802,7 @@ EOF
 	  zip ${DevFlatNT}.zip ${DevFlatNT}
 
 
-	  
+
   )
 
   log "finished buildquads"
