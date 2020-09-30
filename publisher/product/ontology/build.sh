@@ -181,9 +181,9 @@ function runHygieneTests() {
       --query="${hygieneTestSparqlFile}" | \
       sed 's/^\W*PRODERROR:/WARN:/g' | \
       grep -vP "^\W*error(|\W.*)$" | \
+      tee -a ${TMPDIR}/console.txt | tee -a "${dev_log_file}" | \
       sed -e 's#^\W*\(ERROR:.*\)$#\t\x1b\x5b\x33\x31\x6d\1\x1b\x5b\x30\x6d#g' \
-          -e 's#^\W*\(WARN:.*\)$#\t\x1b\x5b\x33\x33\x6d\1\x1b\x5b\x30\x6d#g' | \
-      tee -a ${TMPDIR}/console.txt
+          -e 's#^\W*\(WARN:.*\)$#\t\x1b\x5b\x33\x33\x6d\1\x1b\x5b\x30\x6d#g'
   done < <(getHygieneTestFiles)
 
   generate_junit_command=( "${PYTHON3}" )
@@ -208,14 +208,14 @@ function runHygieneTests() {
       --query="${hygieneTestSparqlFile}" | \
       sed 's/^\W*PRODERROR:/ERROR:/g' | \
       grep -vP "^\W*error(|\W.*)$" | \
+      tee -a ${TMPDIR}/console.txt | \
       sed -e 's#^\W*\(ERROR:.*\)$#\t\x1b\x5b\x33\x31\x6d\1\x1b\x5b\x30\x6d#g' \
-          -e 's#^\W*\(WARN:.*\)$#\t\x1b\x5b\x33\x33\x6d\1\x1b\x5b\x30\x6d#g' | \
-      tee -a ${TMPDIR}/console.txt
+          -e 's#^\W*\(WARN:.*\)$#\t\x1b\x5b\x33\x33\x6d\1\x1b\x5b\x30\x6d#g'
   done < <(getHygieneTestFiles)
 
-  grep -P "^\t\x1b\x5b\x33\x31\x6dERROR:" ${TMPDIR}/console.txt &>/dev/null && return 1
+  grep -P "^\W*ERROR:" ${TMPDIR}/console.txt &>/dev/null && return 1
 
-  # rm -f ${TMPDIR}/console.txt
+  rm -f ${TMPDIR}/console.txt
 
   logRule "Passed all the hygiene tests"
 
