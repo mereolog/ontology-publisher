@@ -41,6 +41,8 @@ def parse_hygiene_log(log_path: Path, include_warnings: bool) -> TestSuite:
                     current_error_msg = line
             elif current_error_msg:
                 current_error_msg += line
+        if current_test_case:
+            test_cases.append(current_test_case)
         return TestSuite(name="ontology_hygiene_tests", test_cases=test_cases)
 
 
