@@ -122,7 +122,7 @@ function runHygieneTests() {
   # Get ontologies for Dev
   #
   log "Merging all dev ontologies into one RDF file: ${tag_root}/DEV.ttl"
-  if [[ "${ONTPUB_EXLUDED}" ]] ; then
+  if [[ "${ONTPUB_EXCLUDED}" ]] ; then
     log "excluding ontologies matching \"${ONTPUB_EXCLUDED}\""
   fi
 
