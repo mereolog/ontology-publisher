@@ -6,7 +6,7 @@ PREFIX owl: <http://www.w3.org/2002/07/owl#>
 
 CONSTRUCT 
 {
-    ?vocPropertyIRI owl:subPropertyOf ?vocParentPropertyIRI
+    ?propertyIRI rdfs:subPropertyOf ?parentPropertyIRI .
 }
 WHERE
 {
@@ -15,14 +15,12 @@ WHERE
         ?propertyIRI a owl:ObjectProperty 
         FILTER (isIRI(?propertyIRI))
         FILTER (CONTAINS(str(?propertyIRI), 'edmcouncil')) .
-        BIND (IRI(REPLACE(str(?propertyIRI), "/ontology/", "/vocabulary/")) as ?vocPropertyIRI)
-     
+        
         ?propertyIRI rdfs:subPropertyOf ?parentPropertyIRI .
     
         ?parentPropertyIRI a owl:ObjectProperty 
         FILTER (isIRI(?parentPropertyIRI))
         FILTER (CONTAINS(str(?parentPropertyIRI), 'edmcouncil')) .
-        BIND (IRI(REPLACE(str(?parentPropertyIRI), "/ontology/", "/vocabulary/")) as ?vocParentPropertyIRI)
     }
 }
 
